@@ -3,6 +3,7 @@ import "./App.css";
 import Header from "./Header";
 import AddContact from "./AddContact";
 import ContactList from "./ContactList";
+import { v4 as uuid_v4 } from "uuid";
 
 function App() {
   const LOCAL_STORAGE_KEY = "contacts";
@@ -12,11 +13,27 @@ function App() {
     { id: "2", name: "Katya", email: "katya.ganti@gmail.com" },
   ];*/
   const addContactHandler = (contact) => {
-    console.log(contact);
     /* ... in "...contacts" seen below represents previous state which means we need all the previous contacts along 
     with the currently added contact which is why we are fetching ...contacts, 
     as the whole thing is an array, we added [] */
-    setContacts([...contacts, contact]);
+
+    // setContacts([...contacts, contact]);
+
+    /* we changed the above setContacts() on line 21 to below as react was compaining about the
+    "Each child in a list should have a unique "key" prop"..hence we installed uuid using 
+    "npm i uuidv4" and imported it (line 6) and using it as below so that we get rid of the error */
+
+    setContacts([...contacts, { id: uuid_v4(), ...contact }]);
+  };
+
+  //function to delete the contact
+
+  const removeContactHandler = (id) => {
+    const newContactList = contacts.filter((contact) => {
+      return contact.id !== id;
+    });
+
+    setContacts(newContactList);
   };
 
   //useEffect helps to re render whenever a change is made
@@ -46,8 +63,10 @@ function App() {
       <Header />
       <AddContact addContactHandler={addContactHandler} />
 
-      {/* we want to pass the above declared contacts array as PROPS to the below contactlist component */}
-      <ContactList contacts={contacts} />
+      {/* we want to pass the above declared contacts array as PROPS to the below contactlist component and hence
+      the "contacts={Contacts}"" and also we want to pass delete/remove contact function handler and 
+      hence we declared the function above on line 32 and passing it below as "getContactId={removeContactHandler}"" */}
+      <ContactList contacts={contacts} getContactId={removeContactHandler} />
     </div>
   );
 }
