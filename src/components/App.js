@@ -6,31 +6,54 @@ import ContactList from "./ContactList";
 import { v4 as uuid_v4 } from "uuid";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import ContactDetail from "./ContactDetail";
+//import api we created
+import api from "../api/contacts";
 
 function App() {
   const LOCAL_STORAGE_KEY = "contacts";
   const [contacts, setContacts] = useState([]);
+
+  const retrieveContacts = async () => {
+    const response = await api.get("/contacts");
+    return response.data;
+  };
   /*  const contacts = [
     { id: "1", name: "Saranya", email: "saranya.vinjarapu@gmail.com" },
     { id: "2", name: "Katya", email: "katya.ganti@gmail.com" },
   ];*/
-  const addContactHandler = (contact) => {
+  const addContactHandler = async (contact) => {
     /* ... in "...contacts" seen below represents previous state which means we need all the previous contacts along 
     with the currently added contact which is why we are fetching ...contacts, 
     as the whole thing is an array, we added [] */
 
     // setContacts([...contacts, contact]);
 
-    /* we changed the above setContacts() on line 21 to below as react was compaining about the
+    /* we changed the above setContacts() on line 29 to below as react was compaining about the
     "Each child in a list should have a unique "key" prop"..hence we installed uuid using 
     "npm i uuidv4" and imported it (line 6) and using it as below so that we get rid of the error */
 
-    setContacts([...contacts, { id: uuid_v4(), ...contact }]);
+    // setContacts([...contacts, { id: uuid_v4(), ...contact }]);
+
+    /* we changed the above setContacts() on line 35 again to below as
+   we will be using the post to api not to add contacts and hence 
+   we are adding request n response, the final thing looks like below
+   please note that we also added async in function definition as we made this change */
+
+    const request = {
+      id: uuid_v4(),
+      ...contact,
+    };
+
+    const response = await api.post("/contacts", request);
+
+    setContacts([...contacts, response.data]);
   };
 
   //function to delete the contact
 
-  const removeContactHandler = (id) => {
+  const removeContactHandler = async (id) => {
+    //we have to add the below await api.delete line and async above as we implement api way
+    await api.delete(`/contacts/${id}`);
     const newContactList = contacts.filter((contact) => {
       return contact.id !== id;
     });
@@ -40,19 +63,33 @@ function App() {
 
   //useEffect helps to re render whenever a change is made
 
+  /* we are having to comment out the below entire useffect that fetches contactsfrom
+local storage as we will be using api json server now...if u wanna see
+how it worked before getting rid of it, please uncomment it and check
+
   /* we are retrieving the contacts from the local storage(check second useffect below to see how we are using localstorage to save data) 
   and passing the contact to the state so that they can be displayed as the list*/
   useEffect(() => {
     /*we are using local storage to save contacts to so that we dont loose them 
     as we refresh the page */
-    const retrieveContacts = JSON.parse(
+    /* const retrieveContacts = JSON.parse(
       localStorage.getItem(LOCAL_STORAGE_KEY)
     );
-    if (retrieveContacts) setContacts(retrieveContacts);
+    if (retrieveContacts) setContacts(retrieveContacts);*/
+    /* we are having to comment out the above entire local storage fetch we will be using api json server now...if u wanna see
+how it worked before getting rid of it, please uncomment it and check. always uncomment to see 
+how it works */
+
+    const getAllContacts = async () => {
+      const allContacts = await retrieveContacts();
+      if (allContacts) setContacts(allContacts);
+    };
+
+    getAllContacts();
   }, []);
 
   /* we are using local storage to store the contacts we are adding, we are taking the input as contacts 
-  and hence the "}, [contacts]" on line 40 */
+  and hence the "}, [contacts]" on line 67 */
 
   useEffect(() => {
     /*we are using local storage to save contacts to so that we dont loose them 
