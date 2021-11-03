@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import ContactCard from "./ContactCard";
 
 const ContactList = (props) => {
@@ -25,7 +26,20 @@ const ContactList = (props) => {
       ></ContactCard>
     );
   });
-  return <div className="ui celled list">{renderContactList}</div>;
+  return (
+    <div className="main">
+      <h2>Contact List</h2>
+      {/* now that we added routes to app.js and / page denotes contact list
+      lets add a button that will takes us from contactList page to AddContact page 
+      instead of having to type in the url bar as "/Add"
+      but when we click on it, it should take us to addContact and for that we need link
+      thats why we import {link} see on line 2 and use it see below*/}
+      <Link to="/add">
+        <button className="ui button blue right">Add Contact</button>
+      </Link>
+      <div className="ui celled list">{renderContactList}</div>
+    </div>
+  );
 };
 
 export default ContactList;
