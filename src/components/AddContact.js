@@ -17,7 +17,9 @@ class AddContact extends Component {
     this.props.addContactHandler(this.state);
     this.setState({ name: "", email: "" });
     /*after we add the contact and clear the fields we need to go back to the 
-    contact list page*/
+    contact list page and hence we are adding the home page route i.e "/" in this case 
+    to the history so that as soon as the contact is added, it will be redirected to the homepage
+    this method is called programmatically navigating from one comp to another*/
     this.props.history.push("/");
   };
   render() {

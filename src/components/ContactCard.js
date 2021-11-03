@@ -8,9 +8,19 @@ const ContactCard = (props) => {
     <div className="item">
       <img className="ui avatar image" src={user} alt="user" />
       <div className="content">
-        {/*when we click on a particula contact, we want to go to contact detail page
-        hence /contact/id */}
-        <Link to={`/contact/${id}`}>
+        {/*when we click on a particular contact, we want to go to contact detail page
+        hence we are using /contact/id below based on id */}
+
+        {/* <Link to={`/contact/${id}`}> */}
+
+        {/* now to make the above line better, see below, we will add pathame n state */}
+
+        <Link
+          to={{
+            pathname: `/contact/${id}`,
+            state: { contact: props.contact },
+          }}
+        >
           <div className="header">{name}</div>
           <div>{email}</div>
         </Link>
