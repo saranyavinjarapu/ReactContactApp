@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import ContactDetail from "./ContactDetail";
 //import api we created
 import api from "../api/contacts";
+import EditContact from "./EditContact";
 
 function App() {
   const LOCAL_STORAGE_KEY = "contacts";
@@ -47,6 +48,16 @@ function App() {
     const response = await api.post("/contacts", request);
 
     setContacts([...contacts, response.data]);
+  };
+
+  const updateContactHandler = async (contact) => {
+    const response = await api.put(`/contacts/${contact.id}`, contact);
+    const { id, name, email } = response.data;
+    setContacts(
+      contacts.map((contact) => {
+        return contact.id === id ? { ...response.data } : contact;
+      })
+    );
   };
 
   //function to delete the contact
@@ -160,6 +171,16 @@ how it works */
             /* second way to pass props in route and is the preferred way to do it in router*/
             render={(props) => (
               <AddContact {...props} addContactHandler={addContactHandler} />
+            )}
+          />
+
+          <Route
+            path="/edit"
+            render={(props) => (
+              <EditContact
+                {...props}
+                updateContactHandler={updateContactHandler}
+              />
             )}
           />
 
